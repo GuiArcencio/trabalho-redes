@@ -99,8 +99,6 @@ class Conexao:
             self.dev_rtt = (1-BETA) * self.dev_rtt + BETA * abs(sample_rtt - self.estimated_rtt)
 
     def _rdt_rcv(self, seq_no, ack_no, flags, payload):
-        print('recebido payload: %r' % payload)
-
         # Fechamento de conexão
         if (flags & FLAGS_FIN) == FLAGS_FIN:
             self.expected_seq_no += 1
@@ -164,7 +162,8 @@ class Conexao:
 
         if seq_no == self.expected_seq_no:
             self.expected_seq_no += len(payload)
-            self.callback(self, payload)
+            if payload != b'':
+                self.callback(self, payload)
 
         self._enviar_segmento(
             FLAGS_ACK,
